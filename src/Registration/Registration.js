@@ -4,7 +4,12 @@ import "./Registration.css";
 import { Button } from "react-bootstrap";
 import ReactDOM from 'react-dom';
 import { registrationSchema } from "./RegistrationSchema";
-import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet,pdf,ReactPDF } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import {jsPDF} from 'jspdf';
+
+
+
 
 const initialValues = {
   first: "",
@@ -15,6 +20,11 @@ const initialValues = {
   
 };
 
+const exportPdf = async () => {
+  const doc = new jsPDF({ orientation: "landscape" });
+  doc.text("Hello world!", 10, 10);
+  doc.save("Invoice.pdf");
+};
 const Registration = () => {
   const {
     values,
@@ -29,14 +39,16 @@ const Registration = () => {
     validationSchema: registrationSchema,
     onSubmit: (values, action) => {
       alert(
-       `Hello You Can Download Your PDF By Clicking Download Button`)
+       `Please Check your Downloads `)
+     
        const styles = StyleSheet.create({
         page: { backgroundColor: 'tomato' },
         section: { color: 'white', textAlign: 'center', margin: 30 }
       });
+
        const MyDocument = (
         <Document>
-          <Page size={"LETTER"} orientation = "landscape" style={styles.page} >
+          <Page size={"A4"} orientation = "landscape" style={styles.page} >
             <View style={styles.section}>
               <Text>{values.first}</Text>
               <Text>{values.last}</Text>
@@ -49,14 +61,16 @@ const Registration = () => {
           </Page>
         </Document>
       );
-  
-      ReactDOM.render(
-        <PDFViewer>{MyDocument}</PDFViewer>,
-        document.getElementById('root'),
+     
+      const doc = new jsPDF({ orientation: "vertical" ,textAlign:"center"});
+      doc.text('Your Innovya Details are ', 10, 10);
+      doc.text('Your Name is : '+values.first + " " + values.last, 10, 20);
+      doc.text('Your Email is : '+values.email, 10, 30);
+      doc.text('Your Address is : '+values.address, 10, 40);
+      doc.text('Your College is : '+values.collegename, 10, 50);
       
-      );
-      //ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`);
-        //Official Command to download the PDF File but It is not Found in react-pdf Module.
+      doc.save("Invoice.pdf");
+      
       action.resetForm();
   },
   });
@@ -190,7 +204,7 @@ const Registration = () => {
                             size="sm"
                             onClick={handleSubmit}
                           >
-                            Register
+                            Download PDF
                           </Button>
                         </div>
                       </div>
